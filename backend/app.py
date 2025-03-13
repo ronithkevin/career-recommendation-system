@@ -3,22 +3,15 @@ import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import logging
 
 app = Flask(__name__)
 
-# Sample dataset: Career options mapped to skills/interests
-career_data = {
-    "Software Engineer": "programming coding algorithms data structures problem-solving",
-    "Data Scientist": "data analysis machine learning statistics python",
-    "AI Engineer": "deep learning neural networks machine learning AI python",
-    "UI/UX Designer": "design creativity user experience prototyping Figma",
-    "Cybersecurity Analyst": "security networks encryption ethical hacking penetration testing",
-    "Cloud Engineer": "AWS cloud computing DevOps Kubernetes networking",
-    "Product Manager": "business strategy leadership market analysis decision-making"
-}
+# Enable logging for debugging
+logging.basicConfig(level=logging.INFO)
 
-# Convert dictionary to DataFrame
-df = pd.DataFrame(list(career_data.items()), columns=["Career", "Skills"])
+# Load career dataset from CSV
+df = pd.read_csv("career_data.csv")
 
 # Text vectorization using TF-IDF
 vectorizer = TfidfVectorizer()
@@ -30,7 +23,7 @@ def recommend_career(user_interests):
     similarities = cosine_similarity(user_vector, tfidf_matrix).flatten()
     top_match_index = np.argmax(similarities)
     
-    if similarities[top_match_index] > 0:  # Ensure some relevance
+    if similarities[top_match_index] > 0:
         return df.iloc[top_match_index]["Career"]
     return "No strong career match found. Try refining your skills."
 
