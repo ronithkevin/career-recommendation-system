@@ -5,14 +5,17 @@ import "./styles.css";
 function App() {
     const [interests, setInterests] = useState("");
     const [recommendation, setRecommendation] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const getRecommendation = async () => {
+        setLoading(true);
         try {
             const response = await axios.post("http://127.0.0.1:5000/recommend", { interests });
             setRecommendation(response.data.career_recommendation);
         } catch (error) {
             setRecommendation("Error fetching recommendation.");
         }
+        setLoading(false);
     };
 
     return (
@@ -24,7 +27,9 @@ function App() {
                 value={interests}
                 onChange={(e) => setInterests(e.target.value)}
             />
-            <button onClick={getRecommendation}>Get Recommendation</button>
+            <button onClick={getRecommendation} disabled={loading}>
+                {loading ? "Loading..." : "Get Recommendation"}
+            </button>
             <p className="result">{recommendation}</p>
         </div>
     );
